@@ -41,4 +41,11 @@ class StockPricesTest < Minitest::Test
 
     assert_equal 34, sp.get_max_profit(stock_prices_yesterday)
   end
+
+  def test_returns_difference_max_profit_for_ten_numbers_downward_trend
+    sp = StockPrices.new
+    stock_prices_yesterday = [100, 70, 65, 58, 51, 49, 30, 21, 20, 15, 5]
+
+    assert_equal -1, sp.get_max_profit(stock_prices_yesterday)
+  end
 end
