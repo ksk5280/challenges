@@ -6,22 +6,32 @@ class PokerHand
   end
 
   def rank
+    return multiples if multiples
     return "Flush" if flush
   end
 
   private
 
-    def flush
-      suits = {
-        "h" => 0,
-        "d" => 0,
-        "s" => 0,
-        "c" => 0
-      }
+    def multiples
+      card_values = {}
       hand.each do |card|
-        suits[card[-1]] += 1
+        value = card.chop
+        card_values[value] = card_values[value] ? card_values[value] += 1 : 1
+        # require "pry"; binding.pry
       end
-      suits.values.include?(5)
+      return "Four of a Kind" if card_values.values.include?(4)
+      return "Full House" if card_values.values.include?(3) and card_values.values.include?(2)
+      return "Three of a Kind" if card_values.values.include?(3)
+      return nil
+    end
+
+    def flush
+      card_suits = {}
+      hand.each do |card|
+        suit = card[-1]
+        card_suits[suit] = card_suits[suit] ? card_suits[suit] += 1 : 1
+      end
+      card_suits.values.include?(5)
     end
 end
 
