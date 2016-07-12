@@ -8,6 +8,7 @@ class PokerHand
   end
 
   def rank
+    return "Royal Flush" if straight_with_ace_high and flush
     return "Straight Flush" if straight and flush
     return "Four of a Kind" if value_count.include?(4)
     return "Full House" if value_count.include?(3) and value_count.include?(2)
@@ -26,13 +27,16 @@ class PokerHand
     def straight
       diff_cards = value_count.size == 5
       four_nums_between_max_and_min = (card_values.keys.max.to_i - card_values.keys.min.to_i) == 4
-      straight_with_ace_low = card_values.keys.reduce(&:+) == 28
-      diff_cards and (four_nums_between_max_and_min or straight_with_ace_low)
+      diff_cards and (four_nums_between_max_and_min or straight_with_ace_high)
+    end
+
+    def straight_with_ace_high
+      card_values.keys.sort == [1, 10, 11, 12, 13]
     end
 
     def card_values
       face_cards = {
-        "A" => 14,
+        "A" => 1,
         "K" => 13,
         "Q" => 12,
         "J" => 11

@@ -42,6 +42,11 @@ class PokerHandTest < Minitest::Test
     assert_equal "Straight Flush", hand.rank
   end
 
+  def test_ranks_royal_flush
+    hand = PokerHand.new(["Ah", "Kh", "Qh", "Jh", "10h"])
+    assert_equal "Royal Flush", hand.rank
+  end
+
   def test_ranks_straight_ace
     high_ace_hand = PokerHand.new(["Ad", "Kh", "Qs", "Jd", "10d"])
     low_ace_hand = PokerHand.new(["Ad", "2h", "3s", "4d", "5d"])
