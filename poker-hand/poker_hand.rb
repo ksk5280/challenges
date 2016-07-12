@@ -6,28 +6,27 @@ class PokerHand
   end
 
   def rank
-    return multiples if multiples
-    return "Flush" if flush
+    value_count = card_values.values
+    suit_count = card_suits.values
+    return "Four of a Kind" if value_count.include?(4)
+    return "Full House" if value_count.include?(3) and value_count.include?(2)
+    return "Flush" if suit_count.include?(5)
+    return "Three of a Kind" if value_count.include?(3)
+    return "2 Pair" if value_count.grep(2).size == 2
   end
 
   private
 
-    def multiples
-      card_values = hand.each_with_object(Hash.new(0)) do |card, card_values|
+    def card_values
+      hand.each_with_object(Hash.new(0)) do |card, card_values|
         card_values[card.chop] += 1
       end
-      return "Four of a Kind" if card_values.values.include?(4)
-      return "Full House" if card_values.values.include?(3) and card_values.values.include?(2)
-      return "Three of a Kind" if card_values.values.include?(3)
-      # return "2 Pair" if card_values.values.count(2)
-      return nil
     end
 
-    def flush
-      card_suits = hand.each_with_object(Hash.new(0)) do |card, suits|
+    def card_suits
+      hand.each_with_object(Hash.new(0)) do |card, suits|
         suits[card[-1]] += 1
       end
-      card_suits.values.include?(5)
     end
 end
 
