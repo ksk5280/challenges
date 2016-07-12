@@ -13,23 +13,19 @@ class PokerHand
   private
 
     def multiples
-      card_values = {}
-      hand.each do |card|
-        value = card.chop
-        card_values[value] = card_values[value] ? card_values[value] += 1 : 1
-        # require "pry"; binding.pry
+      card_values = hand.each_with_object(Hash.new(0)) do |card, card_values|
+        card_values[card.chop] += 1
       end
       return "Four of a Kind" if card_values.values.include?(4)
       return "Full House" if card_values.values.include?(3) and card_values.values.include?(2)
       return "Three of a Kind" if card_values.values.include?(3)
+      # return "2 Pair" if card_values.values.count(2)
       return nil
     end
 
     def flush
-      card_suits = {}
-      hand.each do |card|
-        suit = card[-1]
-        card_suits[suit] = card_suits[suit] ? card_suits[suit] += 1 : 1
+      card_suits = hand.each_with_object(Hash.new(0)) do |card, suits|
+        suits[card[-1]] += 1
       end
       card_suits.values.include?(5)
     end

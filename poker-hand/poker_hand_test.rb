@@ -22,6 +22,11 @@ class PokerHandTest < Minitest::Test
     assert_equal "Full House", hand.rank
   end
 
+  def test_ranks_three_of_a_kind
+    hand = PokerHand.new(["Ah", "As", "Ad", "5s", "2c"])
+    assert_equal "Three of a Kind", hand.rank
+  end
+
   def test_ranks_pair
     skip
     hand = PokerHand.new(["Ah", "As", "10c", "7d", "6s"])
