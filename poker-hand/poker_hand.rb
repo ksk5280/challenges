@@ -19,6 +19,7 @@ class PokerHand
 
   def initialize(hand)
     @hand = hand
+    raise ArgumentError.new("Hand must be an array of strings") unless valid_input_type?
     @value_count = card_values.values
     @suit_count = card_suits.values
     check_hand_validity
@@ -30,12 +31,16 @@ class PokerHand
     raise ArgumentError.new("Cards cannot be identical") unless cards_unique?
   end
 
+  def valid_input_type?
+    hand.class == Array and hand.all? { |card| card.class == String }
+  end
+
   def valid_cards?
-    valid_values = !card_values.keys.include?(0)
-    valid_suits = card_suits.keys.all? do |suit|
+    has_valid_values = !card_values.keys.include?(0)
+    has_valid_suits = card_suits.keys.all? do |suit|
       ["h", "d", "s", "c"].include?(suit)
     end
-    valid_values and valid_suits
+    has_valid_values and has_valid_suits
   end
 
   def cards_unique?
@@ -66,9 +71,9 @@ class PokerHand
   end
 
   def straight?
-    diff_cards = value_count.size == 5
-    four_between_max_and_min = (card_values.keys.max - card_values.keys.min) == 4
-    diff_cards and (four_between_max_and_min or straight_with_ace_high?)
+    has_diff_cards = value_count.size == 5
+    has_four_between_max_and_min = (card_values.keys.max - card_values.keys.min) == 4
+    has_diff_cards and (has_four_between_max_and_min or straight_with_ace_high?)
   end
 
   def straight_with_ace_high?
@@ -92,7 +97,7 @@ class PokerHand
 
   def card_suits
     hand.each_with_object(Hash.new(0)) do |card, suits|
-      suits[card[-1]] += 1
+      suits[card[-1].downcase] += 1
     end
   end
 end

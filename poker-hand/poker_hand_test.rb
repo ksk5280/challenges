@@ -25,7 +25,7 @@ class PokerHandTest < Minitest::Test
   def test_ranks_three_of_a_kind
     hand1 = PokerHand.new(["Ah", "2c", "As", "Ad", "5s"])
     hand2 = PokerHand.new(["4h", "4c", "Kc", "4d", "3s"])
-    
+
     assert_equal "Three of a Kind", hand1.rank
     assert_equal "Three of a Kind", hand2.rank
   end
@@ -100,6 +100,12 @@ class PokerHandTest < Minitest::Test
     end
   end
 
+  def test_card_values_and_suit_must_be_in_right_order
+    assert_raises ArgumentError do
+      PokerHand.new(["h8", "d10", "sK", "c4", "dA"])
+    end
+  end
+
   def test_argument_error_raised_if_there_are_invalid_cards
     assert_raises ArgumentError do
       PokerHand.new(["3h", "4d", "9f", "10s", "Ks"])
@@ -114,14 +120,28 @@ class PokerHandTest < Minitest::Test
     end
   end
 
-  def test_argument_raised_for_duplicate_cards
+  def test_argument_error_raised_for_duplicate_cards
     assert_raises ArgumentError do
       PokerHand.new(["Ah", "5d", "9h", "Kc", "5d"])
     end
   end
 
+  def test_argument_error_raised_for_invalid_input_type
+    assert_raises ArgumentError do
+      PokerHand.new("fdkjd")
+    end
+    assert_raises ArgumentError do
+      PokerHand.new([12, 34, 45, 65, 76])
+    end
+  end
+
   def test_face_cards_are_case_insensitive
     hand = PokerHand.new(["as", "jd", "kh", "qs", "ac"])
+    assert_equal "Pair of Aces", hand.rank
+  end
+
+  def test_suits_are_case_insensitive
+    hand = PokerHand.new(["AS", "JD", "KH", "QS", "AC"])
     assert_equal "Pair of Aces", hand.rank
   end
 end
