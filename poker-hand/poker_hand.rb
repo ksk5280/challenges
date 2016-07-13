@@ -1,8 +1,25 @@
 class PokerHand
-  attr_reader :hand, :value_count, :suit_count
+  attr_reader :hand, :card_values, :value_count, :suit_count
+
+  CARDS = {
+    1 => "Aces",
+    2 => "Twos",
+    3 => "Threes",
+    4 => "Fours",
+    5 => "Fives",
+    6 => "Sixes",
+    7 => "Sevens",
+    8 => "Eights",
+    9 => "Nines",
+    10 => "Tens",
+    11 => "Jacks",
+    12 => "Queens",
+    13 => "Kings"
+  }
 
   def initialize(hand)
     @hand = hand
+    @card_values = card_values
     @value_count = card_values.values
     @suit_count = card_suits.values
   end
@@ -16,9 +33,16 @@ class PokerHand
     return "Straight" if straight
     return "Three of a Kind" if value_count.include?(3)
     return "2 Pair" if value_count.grep(2).size == 2
+    return "Pair of #{pair_string}" if pair_string
+    "High Card"
   end
 
   private
+
+    def pair_string
+      pair = card_values.select {|k, v| v == 2}.keys[0]
+      CARDS[pair]
+    end
 
     def flush
       suit_count.include?(5)
@@ -26,7 +50,7 @@ class PokerHand
 
     def straight
       diff_cards = value_count.size == 5
-      four_nums_between_max_and_min = (card_values.keys.max.to_i - card_values.keys.min.to_i) == 4
+      four_nums_between_max_and_min = (card_values.keys.max - card_values.keys.min) == 4
       diff_cards and (four_nums_between_max_and_min or straight_with_ace_high)
     end
 
@@ -57,12 +81,3 @@ class PokerHand
       end
     end
 end
-
-
-# Write some code that will evaluate a poker hand and determine its
-# rank.
-#
-# Example:
-# Hand: Ah As 10c 7d 6s (Pair of Aces)
-# Hand: Kh Kc 3s 3h 2d (2 Pair)
-# Hand: Kh Qh 6h 2h 9h (Flush)

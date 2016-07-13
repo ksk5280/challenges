@@ -50,13 +50,21 @@ class PokerHandTest < Minitest::Test
   def test_ranks_straight_ace
     high_ace_hand = PokerHand.new(["Ad", "Kh", "Qs", "Jd", "10d"])
     low_ace_hand = PokerHand.new(["Ad", "2h", "3s", "4d", "5d"])
+
     assert_equal "Straight", high_ace_hand.rank
     assert_equal "Straight", low_ace_hand.rank
   end
 
   def test_ranks_pair
-    skip
-    hand = PokerHand.new(["Ah", "As", "10c", "7d", "6s"])
-    assert_equal "Pair of Aces", hand.rank
+    ace_hand = PokerHand.new(["Ah", "As", "10c", "7d", "6s"])
+    king_hand = PokerHand.new(["Kh", "Ks", "10c", "7d", "6s"])
+
+    assert_equal "Pair of Aces", ace_hand.rank
+    assert_equal "Pair of Kings", king_hand.rank
+  end
+
+  def test_defaults_to_high_card
+    hand = PokerHand.new(["2h", "8d", "Ks", "Qs", "4c"])
+    assert_equal "High Card", hand.rank
   end
 end
