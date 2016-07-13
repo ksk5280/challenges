@@ -1,5 +1,5 @@
 class PokerHand
-  attr_reader :hand, :card_values, :value_count, :suit_count
+  attr_reader :hand, :value_count, :suit_count
 
   CARDS = {
     1 => "Aces",
@@ -19,62 +19,80 @@ class PokerHand
 
   def initialize(hand)
     @hand = hand
-    @card_values = card_values
     @value_count = card_values.values
     @suit_count = card_suits.values
+    check_hand_validity
+  end
+
+  def check_hand_validity
+    raise ArgumentError.new("Hand must be 5 cards") unless hand.length == 5
+    raise ArgumentError.new("One or more cards are invalid") unless valid_cards?
+    raise ArgumentError.new("Cards cannot be identical") unless cards_unique?
+  end
+
+  def valid_cards?
+    valid_values = !card_values.keys.include?(0)
+    valid_suits = card_suits.keys.all? do |suit|
+      ["h", "d", "s", "c"].include?(suit)
+    end
+    valid_values and valid_suits
+  end
+
+  def cards_unique?
+    hand.each_with_object(Hash.new(0)) do |card, card_hash|
+      card_hash[card] += 1
+    end.values.count == 5
   end
 
   def rank
-    return "Royal Flush" if straight_with_ace_high and flush
-    return "Straight Flush" if straight and flush
+    return "Royal Flush" if straight_with_ace_high? and flush?
+    return "Straight Flush" if straight? and flush?
     return "Four of a Kind" if value_count.include?(4)
     return "Full House" if value_count.include?(3) and value_count.include?(2)
-    return "Flush" if flush
-    return "Straight" if straight
+    return "Flush" if flush?
+    return "Straight" if straight?
     return "Three of a Kind" if value_count.include?(3)
-    return "2 Pair" if value_count.grep(2).size == 2
+    return "Two Pair" if value_count.grep(2).size == 2
     return "Pair of #{pair_string}" if pair_string
     "High Card"
   end
 
-  private
+  def pair_string
+    CARDS[card_values.key(2)]
+  end
 
-    def pair_string
-      CARDS[card_values.key(2)]
-    end
+  def flush?
+    suit_count.include?(5)
+  end
 
-    def flush
-      suit_count.include?(5)
-    end
+  def straight?
+    diff_cards = value_count.size == 5
+    four_between_max_and_min = (card_values.keys.max - card_values.keys.min) == 4
+    diff_cards and (four_between_max_and_min or straight_with_ace_high?)
+  end
 
-    def straight
-      diff_cards = value_count.size == 5
-      four_between_max_and_min = (card_values.keys.max - card_values.keys.min) == 4
-      diff_cards and (four_between_max_and_min or straight_with_ace_high)
-    end
+  def straight_with_ace_high?
+    card_values.keys.sort == [1, 10, 11, 12, 13]
+  end
 
-    def straight_with_ace_high
-      card_values.keys.sort == [1, 10, 11, 12, 13]
+  def card_values
+    face_cards = {
+      "A" => 1,
+      "K" => 13,
+      "Q" => 12,
+      "J" => 11
+    }
+    hand.each_with_object(Hash.new(0)) do |card, card_values|
+      card_value = card.chop
+      is_face_card = face_cards.keys.include?(card_value.upcase)
+      card_value_int = is_face_card ? face_cards[card_value.upcase] : card_value.to_i
+      card_values[card_value_int] += 1
     end
+  end
 
-    def card_values
-      face_cards = {
-        "A" => 1,
-        "K" => 13,
-        "Q" => 12,
-        "J" => 11
-      }
-      hand.each_with_object(Hash.new(0)) do |card, card_values|
-        card_value = card.chop
-        face_card = face_cards.keys.include?(card_value)
-        card_value_int = face_card ? face_cards[card_value] : card_value.to_i
-        card_values[card_value_int] += 1
-      end
+  def card_suits
+    hand.each_with_object(Hash.new(0)) do |card, suits|
+      suits[card[-1]] += 1
     end
-
-    def card_suits
-      hand.each_with_object(Hash.new(0)) do |card, suits|
-        suits[card[-1]] += 1
-      end
-    end
+  end
 end
