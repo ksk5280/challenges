@@ -40,8 +40,7 @@ class PokerHand
   private
 
     def pair_string
-      pair = card_values.select {|k, v| v == 2}.keys[0]
-      CARDS[pair]
+      CARDS[card_values.key(2)]
     end
 
     def flush
@@ -50,8 +49,8 @@ class PokerHand
 
     def straight
       diff_cards = value_count.size == 5
-      four_nums_between_max_and_min = (card_values.keys.max - card_values.keys.min) == 4
-      diff_cards and (four_nums_between_max_and_min or straight_with_ace_high)
+      four_between_max_and_min = (card_values.keys.max - card_values.keys.min) == 4
+      diff_cards and (four_between_max_and_min or straight_with_ace_high)
     end
 
     def straight_with_ace_high
@@ -66,12 +65,10 @@ class PokerHand
         "J" => 11
       }
       hand.each_with_object(Hash.new(0)) do |card, card_values|
-        if card.chop.to_i == 0
-          card_value = face_cards[card.chop]
-        else
-          card_value = card.chop.to_i
-        end
-        card_values[card_value] += 1
+        card_value = card.chop
+        face_card = face_cards.keys.include?(card_value)
+        card_value_int = face_card ? face_cards[card_value] : card_value.to_i
+        card_values[card_value_int] += 1
       end
     end
 
